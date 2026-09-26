@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thủy Hoàn Tiền - Shopee</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6f7fb;color:#171923}
+    .wrap{max-width:760px;margin:60px auto;padding:24px}.card{background:#fff;border-radius:20px;padding:28px;box-shadow:0 8px 30px #0000000d}
+    h1{margin:0 0 8px;font-size:28px}.muted{color:#667085}.label{display:block;font-weight:700;margin:22px 0 8px}
+    input{width:100%;padding:14px 15px;border:1px solid #d0d5dd;border-radius:12px;font-size:15px}
+    button{margin-top:16px;width:100%;padding:14px;border:0;border-radius:12px;background:#111827;color:white;font-weight:700;font-size:15px;cursor:pointer}
+    button:disabled{opacity:.55;cursor:not-allowed}.result{margin-top:20px;padding:16px;border-radius:12px;background:#f2f4f7;display:none;word-break:break-word}
+    .ok{color:#067647;font-weight:700}.err{color:#b42318;font-weight:700}.copy{background:#fff;color:#111827;border:1px solid #d0d5dd}
+    small{display:block;margin-top:10px;color:#667085;line-height:1.5}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>🛍️ Thủy Hoàn Tiền</h1>
+    <p class="muted">Tạo link Shopee affiliate có SubID riêng.</p>
+
+    <label class="label" for="url">Link sản phẩm Shopee</label>
+    <input id="url" placeholder="Dán link Shopee vào đây">
+
+    <label class="label" for="sub">SubID khách hàng</label>
+    <input id="sub" value="demo-user" placeholder="Ví dụ: user_001">
+
+    <button id="btn">Tạo link hoàn tiền</button>
+
+    <div id="result" class="result"></div>
+    <small>API key chỉ nằm phía server Vercel, không được đưa vào mã trình duyệt.</small>
+  </div>
+</div>
+<script>
+const btn=document.getElementById("btn"), url=document.getElementById("url"), sub=document.getElementById("sub"), result=document.getElementById("result");
+btn.onclick=async()=>{
+  result.style.display="block"; result.className="result"; result.textContent="Đang tạo link...";
+  btn.disabled=true;
+  try{
+    const r=await fetch("/api/shopee/create-link",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({originUrl:url.value,subId:sub.value})});
+    const d=await r.json();
+    if(!r.ok||!d.ok) throw new Error(d.error||"Không tạo được link");
+    result.innerHTML='<div class="ok">✓ Tạo link thành công</div><p>'+d.shortLink+'</p><button class="copy" onclick="navigator.clipboard.writeText('+JSON.stringify(d.shortLink)+')">Sao chép link</button>';
+  }catch(e){result.innerHTML='<div class="err">✕ '+e.message+'</div>'}
+  finally{btn.disabled=false}
+};
+</script>
+</body>
+</html>

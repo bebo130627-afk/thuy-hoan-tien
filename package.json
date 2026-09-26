@@ -1,0 +1,6 @@
+{
+  "name": "thuy-hoan-tien-shopee-v1",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": { "dev": "vercel dev" }
+}
